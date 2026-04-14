@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>LUXE — Premium Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+/* ============================================
+   DESIGN TOKENS
+   ============================================ */
+:root{
+  --ink:#0a0a0f;
+  --ink2:#11131e;
+  --ink3:#181c2e;
+  --g1:rgba(255,255,255,0.03);
+  --g2:rgba(255,255,255,0.06);
+  --g3:rgba(255,255,255,0.10);
+  --g4:rgba(255,255,255,0.16);
+  --edge:rgba(255,255,255,0.08);
+  --edge2:rgba(255,255,255,0.14);
+  --edge3:rgba(255,255,255,0.24);
+  --gold:#c9a84c;
+  --gold2:#e8c97a;
+  --gold3:#f5e0a0;
+  --gold-glow:rgba(201,168,76,0.18);
+  --gold-glow2:rgba(201,168,76,0.35);
+  --emerald:#22c97a;
+  --amber:#f5a623;
+  --rose:#f03e5c;
+  --sky:#4facfe;
+  --cream:#f5f0e8;
+  --text:#e8eaf0;
+  --text2:#8a90a8;
+  --text3:#4a5068;
+  --r:18px;--r2:12px;--r3:8px;--r4:6px;
+  --fs:'Jost',sans-serif;
+  --fd:'Cormorant Garamond',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{background:var(--ink);color:var(--text);font-family:var(--fs);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+#root{min-height:100vh}
+::selection{background:var(--gold-glow2);color:var(--gold3)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.3);border-radius:99px}
+
+/* ============================================
+   KEYFRAMES
+   ============================================ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideR{from{opacity:0;transform:translateX(110%)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideL{from{opacity:0;transform:translateX(-110%)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleUp{from{opacity:0;transform:scale(0.88) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(0.95)}}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(80px,-60px) scale(1.15)}70%{transform:translate(-50px,40px) scale(0.88)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}35%{transform:translate(-100px,60px) scale(0.9)}70%{transform:translate(60px,-80px) scale(1.12)}}
+@keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,50px) scale(1.08)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes heroReveal{0%{opacity:0;filter:blur(8px);transform:translateY(24px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes badgePop{0%{transform:scale(0) rotate(-18deg);opacity:0}65%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes borderRun{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 var(--gold-glow)}60%{box-shadow:0 0 32px 8px var(--gold-glow)}}
+@keyframes overlayIn{from{opacity:0;backdrop-filter:blur(0px)}to{opacity:1;backdrop-filter:blur(12px)}}
+@keyframes counterUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ============================================
+   GLASS SYSTEM
+   ============================================ */
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,rgba(255,255,255,0.02) 100%);
+  border:1px solid var(--edge2);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+}
+.glass-dark{
+  background:rgba(10,10,15,0.82);
+  border:1px solid var(--edge2);
+  backdrop-filter:blur(40px) saturate(200%);
+  -webkit-backdrop-filter:blur(40px) saturate(200%);
+}
+.glass-card{
+  background:linear-gradient(145deg,rgba(255,255,255,0.065) 0%,rgba(255,255,255,0.015) 60%,rgba(201,168,76,0.03) 100%);
+  border:1px solid var(--edge2);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  transition:background .3s,border-color .3s,transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s;
+}
+.glass-card:hover{
+  background:linear-gradient(145deg,rgba(255,255,255,0.09) 0%,rgba(255,255,255,0.03) 60%,rgba(201,168,76,0.05) 100%);
+  border-color:rgba(201,168,76,0.22);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:7px;padding:12px 24px;border-radius:var(--r2);border:none;
+  cursor:pointer;font-family:var(--fs);font-size:14px;font-weight:600;
+  transition:all .24s cubic-bezier(.2,.8,.3,1);text-decoration:none;
+  white-space:nowrap;position:relative;overflow:hidden;letter-spacing:.3px;
+}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.14),transparent 60%);opacity:0;transition:opacity .2s}
+.btn:hover::before{opacity:1}
+.btn-gold{
+  background:linear-gradient(135deg,var(--gold) 0%,#b8933e 50%,var(--gold2) 100%);
+  background-size:200% 200%;
+  color:#1a1200;font-weight:700;
+  box-shadow:0 4px 24px var(--gold-glow2),inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 36px var(--gold-glow2),0 0 0 1px rgba(201,168,76,0.4),inset 0 1px 0 rgba(255,255,255,0.3)}
+.btn-gold:active{transform:translateY(0)}
+.btn-outline{
+  background:transparent;color:var(--text);
+  border:1px solid var(--edge2);
+}
+.btn-outline:hover{background:var(--g2);border-color:var(--edge3);transform:translateY(-1px)}
+.btn-ghost{background:var(--g2);color:var(--text);border:1px solid var(--edge2)}
+.btn-ghost:hover{background:var(--g3);border-color:var(--edge3)}
+.btn-danger{background:rgba(240,62,92,0.1);color:#fb7185;border:1px solid rgba(240,62,92,0.25)}
+.btn-danger:hover{background:rgba(240,62,92,0.2)}
+.btn-wa{
+  background:linear-gradient(135deg,#25d366 0%,#128c4e 100%);
+  color:#fff;font-weight:800;font-size:16px;
+  padding:18px 32px;border-radius:var(--r);width:100%;
+  box-shadow:0 6px 32px rgba(37,211,102,0.3);
+  letter-spacing:.3px;
+}
+.btn-wa:hover{transform:translateY(-3px);box-shadow:0 14px 48px rgba(37,211,102,0.45)}
+.btn-wa:active{transform:translateY(-1px)}
+.btn-wa.off{opacity:.4;pointer-events:none}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:var(--r3)}
+.btn-xs{padding:5px 10px;font-size:12px;border-radius:var(--r4)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ============================================
+   FORM ELEMENTS
+   ============================================ */
+.inp,.ta,.sel{
+  width:100%;padding:12px 16px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--edge2);border-radius:var(--r2);
+  color:var(--text);font-family:var(--fs);font-size:14px;
+  transition:all .22s;outline:none;
+}
+.inp:focus,.ta:focus,.sel:focus{border-color:var(--gold);background:rgba(201,168,76,0.04);box-shadow:0 0 0 3px rgba(201,168,76,0.1)}
+.inp::placeholder,.ta::placeholder{color:var(--text3)}
+.ta{resize:vertical;min-height:88px;line-height:1.7}
+.sel option{background:#181c2e;color:var(--text)}
+.field{display:flex;flex-direction:column;gap:7px}
+.field>label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px}
+
+/* TOGGLE */
+.tog{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-s{position:absolute;inset:0;background:var(--ink3);border-radius:99px;cursor:pointer;transition:.25s;border:1px solid var(--edge2)}
+.tog-s::before{content:'';position:absolute;width:20px;height:20px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.tog input:checked+.tog-s{background:linear-gradient(135deg,var(--gold),#b8933e);border-color:var(--gold)}
+.tog input:checked+.tog-s::before{transform:translateX(22px);background:#1a1200}
+
+/* ============================================
+   STATUS TAGS
+   ============================================ */
+.tag{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.t-green{background:rgba(34,201,122,.11);color:#4ade80;border:1px solid rgba(34,201,122,.25)}
+.t-yellow{background:rgba(245,166,35,.11);color:#fbbf24;border:1px solid rgba(245,166,35,.25)}
+.t-red{background:rgba(240,62,92,.11);color:#fb7185;border:1px solid rgba(240,62,92,.25)}
+.t-gold{background:rgba(201,168,76,.1);color:var(--gold2);border:1px solid rgba(201,168,76,.25)}
+.t-blue{background:rgba(79,172,254,.1);color:#7dd3fc;border:1px solid rgba(79,172,254,.25)}
+.t-dev{background:rgba(168,85,247,.1);color:#d8b4fe;border:1px solid rgba(168,85,247,.25)}
+.t-own{background:rgba(245,166,35,.1);color:#fbbf24;border:1px solid rgba(245,166,35,.25)}
+.t-adm{background:rgba(79,172,254,.1);color:#7dd3fc;border:1px solid rgba(79,172,254,.25)}
+.sdot{width:5px;height:5px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(16px,4vw,48px);
+  background:rgba(10,10,15,0.55);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border-bottom:1px solid rgba(255,255,255,0);
+  transition:background .4s,border-color .4s;
+}
+.header.scrolled{background:rgba(10,10,15,0.88);border-bottom-color:var(--edge)}
+.header-logo{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer}
+.logo-icon{
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold) 0%,#7a5e20 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:20px;font-weight:700;color:#1a1200;font-style:italic;
+  box-shadow:0 4px 20px var(--gold-glow2);
+}
+.logo-name{font-family:var(--fd);font-size:22px;font-weight:600;letter-spacing:.5px;color:var(--text)}
+.logo-name em{color:var(--gold2);font-style:normal}
+.header-right{display:flex;align-items:center;gap:8px}
+
+/* LANGUAGE SWITCHER */
+.lang-wrap{display:flex;background:rgba(255,255,255,0.04);border:1px solid var(--edge);border-radius:var(--r2);padding:3px;gap:2px}
+.lang-btn{padding:5px 12px;border-radius:var(--r3);background:transparent;border:none;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--fs);letter-spacing:.4px}
+.lang-btn.active{background:linear-gradient(135deg,var(--gold),#b8933e);color:#1a1200}
+.lang-btn:hover:not(.active){color:var(--text);background:var(--g2)}
+
+/* ADMIN TRIGGER */
+.admin-trigger{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 16px;border-radius:var(--r2);
+  background:var(--g2);border:1px solid var(--edge2);
+  color:var(--text);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:var(--fs);
+}
+.admin-trigger:hover{background:var(--g3);border-color:var(--edge3)}
+.admin-trigger .gold-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold-glow2);flex-shrink:0}
+
+/* ADMIN DROPDOWN */
+.adrop-wrap{position:relative}
+.adrop{
+  position:absolute;top:calc(100%+12px);right:0;
+  min-width:240px;
+  background:rgba(11,13,20,0.97);
+  border:1px solid var(--edge2);border-radius:var(--r);
+  overflow:hidden;
+  box-shadow:0 28px 72px rgba(0,0,0,.7),0 0 0 1px rgba(201,168,76,0.07);
+  animation:scaleUp .22s cubic-bezier(.2,.8,.3,1);
+  transform-origin:top right;
+}
+.adrop-head{padding:16px 18px;border-bottom:1px solid var(--edge);background:rgba(201,168,76,0.04)}
+.adrop-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 18px;color:var(--text2);
+  cursor:pointer;font-size:13.5px;font-weight:500;transition:all .15s;
+}
+.adrop-item:hover{background:var(--g2);color:var(--text)}
+.adrop-item.danger{color:#fb7185}
+.adrop-item.danger:hover{background:rgba(240,62,92,0.08)}
+.adrop-sep{height:1px;background:var(--edge);margin:4px 0}
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero{
+  position:relative;min-height:100svh;
+  display:flex;align-items:center;overflow:hidden;
+  padding-top:68px;
+}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg-img{width:100%;height:100%;object-fit:cover;filter:brightness(.25) saturate(1.3)}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to bottom,rgba(10,10,15,.6) 0%,rgba(10,10,15,.0) 35%,rgba(10,10,15,.88) 100%),
+    linear-gradient(to right,rgba(10,10,15,.5) 0%,transparent 70%),
+    radial-gradient(ellipse at 20% 60%,rgba(201,168,76,.06) 0%,transparent 55%);
+}
+.hero-grain{position:absolute;inset:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:1}
+.orb-1{width:700px;height:700px;top:-200px;left:-150px;background:radial-gradient(circle,rgba(201,168,76,.1),transparent 65%);animation:drift1 14s ease-in-out infinite}
+.orb-2{width:600px;height:600px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(79,172,254,.06),transparent 65%);animation:drift2 18s ease-in-out infinite}
+.orb-3{width:400px;height:400px;top:40%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(201,168,76,.04),transparent 65%);animation:drift3 22s ease-in-out infinite}
+.hero-content{position:relative;z-index:2;width:100%;max-width:1300px;margin:0 auto;padding:clamp(40px,8vh,120px) clamp(16px,5vw,60px)}
+.hero-label{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:7px 16px;border-radius:99px;
+  background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.22);
+  font-size:11px;font-weight:700;color:var(--gold2);
+  text-transform:uppercase;letter-spacing:1.5px;
+  margin-bottom:24px;
+  animation:heroReveal .7s .1s both;
+}
+.hero-label-line{width:24px;height:1px;background:linear-gradient(to right,var(--gold),transparent)}
+.hero-h1{
+  font-family:var(--fd);font-weight:300;
+  font-size:clamp(44px,8vw,96px);
+  line-height:1.04;color:var(--cream);
+  margin-bottom:24px;
+  animation:heroReveal .9s .2s both;
+  letter-spacing:-.5px;
+}
+.hero-h1 strong{font-weight:700;color:var(--gold2);display:block}
+.hero-h1 em{font-style:italic;color:rgba(245,240,232,0.7)}
+.hero-sub{
+  font-size:clamp(15px,2vw,19px);color:var(--text2);
+  max-width:500px;line-height:1.8;margin-bottom:40px;
+  animation:heroReveal .7s .38s both;font-weight:300;
+}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;animation:heroReveal .7s .5s both}
+.hero-stats{
+  display:flex;gap:clamp(20px,4vw,56px);
+  margin-top:clamp(48px,7vh,96px);
+  animation:heroReveal .7s .65s both;
+  flex-wrap:wrap;
+}
+.hero-stat{display:flex;flex-direction:column;gap:4px}
+.hero-stat-n{
+  font-family:var(--fd);font-weight:700;
+  font-size:clamp(28px,4vw,44px);
+  color:var(--cream);line-height:1;
+  overflow:hidden;
+}
+.hero-stat-n span{display:block;animation:counterUp .6s cubic-bezier(.2,.8,.3,1) both}
+.hero-stat-l{font-size:12px;color:var(--text3);letter-spacing:.6px;font-weight:500;text-transform:uppercase}
+.hero-vdiv{width:1px;background:linear-gradient(to bottom,transparent,var(--edge2),transparent);align-self:stretch}
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;z-index:2;
+  animation:fadeIn 1s 1.4s both;cursor:pointer;
+}
+.scroll-text{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.scroll-track{width:1px;height:48px;background:linear-gradient(to bottom,var(--gold2),transparent);animation:pulse 2.5s ease-in-out infinite}
+
+/* ============================================
+   MARQUEE STRIP
+   ============================================ */
+.marquee-wrap{
+  overflow:hidden;padding:14px 0;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.04),rgba(201,168,76,0.04),transparent);
+  border-top:1px solid rgba(201,168,76,0.1);
+  border-bottom:1px solid rgba(201,168,76,0.1);
+}
+.marquee-inner{display:flex;gap:48px;white-space:nowrap;animation:marquee 28s linear infinite}
+.m-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:700;color:var(--text3);
+  letter-spacing:1.2px;text-transform:uppercase;
+}
+.m-gem{
+  font-size:13px;color:var(--gold);opacity:0.6;
+}
+
+/* ============================================
+   CATALOG SECTION
+   ============================================ */
+.catalog{max-width:1300px;margin:0 auto;padding:clamp(48px,6vw,96px) clamp(16px,5vw,60px)}
+.catalog-header{margin-bottom:clamp(28px,4vw,56px)}
+.section-eyebrow{
+  display:flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:700;color:var(--gold2);
+  text-transform:uppercase;letter-spacing:1.5px;
+  margin-bottom:14px;
+}
+.eyebrow-line{flex:1;max-width:40px;height:1px;background:linear-gradient(to right,var(--gold2),transparent)}
+.section-title{
+  font-family:var(--fd);font-weight:300;
+  font-size:clamp(30px,4vw,52px);
+  line-height:1.1;color:var(--cream);
+}
+.section-title strong{font-weight:700;color:var(--gold2)}
+.section-count{font-size:13px;color:var(--text3);margin-top:8px;font-weight:400}
+
+/* FILTER BAR */
+.filter-bar{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+  padding:16px 20px;border-radius:var(--r);margin-bottom:clamp(24px,3vw,40px);
+  background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));
+  border:1px solid var(--edge);
+}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;flex-shrink:0}
+.search-box .inp{padding-left:44px}
+.pills{display:flex;gap:7px;flex-wrap:wrap}
+.pill{
+  padding:8px 18px;border-radius:99px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .22s;
+  background:var(--g1);border:1px solid var(--edge);color:var(--text2);
+  letter-spacing:.3px;
+}
+.pill.active{
+  background:rgba(201,168,76,0.1);
+  border-color:rgba(201,168,76,0.3);
+  color:var(--gold2);
+}
+.pill:hover:not(.active){border-color:var(--edge2);color:var(--text)}
+
+/* PRODUCT GRID */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr));gap:clamp(12px,2vw,20px)}
+
+/* ============================================
+   PRODUCT CARD
+   ============================================ */
+.pcard{
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  display:flex;flex-direction:column;
+  background:linear-gradient(145deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.02) 60%,rgba(201,168,76,0.025) 100%);
+  border:1px solid var(--edge2);
+  transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s;
+  position:relative;
+}
+.pcard:hover{
+  transform:translateY(-10px) scale(1.01);
+  border-color:rgba(201,168,76,0.28);
+  box-shadow:0 32px 80px rgba(0,0,0,.55),0 0 0 1px rgba(201,168,76,0.1),0 0 80px rgba(201,168,76,0.05);
+}
+.pcard:active{transform:translateY(-4px) scale(1.005)}
+.pc-media{position:relative;overflow:hidden;aspect-ratio:3/2}
+.pc-img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.3,1)}
+.pcard:hover .pc-img{transform:scale(1.08)}
+.pc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,15,.75) 0%,rgba(10,10,15,0) 55%)}
+.pc-overlay2{position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.04),transparent);opacity:0;transition:opacity .3s}
+.pcard:hover .pc-overlay2{opacity:1}
+.pc-tag-disc{
+  position:absolute;top:12px;left:12px;
+  background:linear-gradient(135deg,var(--rose),#b8283f);
+  color:#fff;font-size:10px;font-weight:800;
+  padding:4px 10px;border-radius:99px;
+  letter-spacing:.4px;font-family:var(--fs);
+  animation:badgePop .4s .1s both;
+  box-shadow:0 4px 14px rgba(240,62,92,.45);
+}
+.pc-stock{position:absolute;bottom:12px;left:12px}
+.pc-fav{
+  position:absolute;top:12px;right:12px;
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(10,10,15,0.75);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--edge2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;opacity:0;cursor:pointer;
+}
+.pcard:hover .pc-fav{opacity:1}
+.pc-fav:hover{background:rgba(240,62,92,0.2);border-color:rgba(240,62,92,0.4);transform:scale(1.1)}
+.pc-body{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:7px}
+.pc-cat{font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px}
+.pc-name{
+  font-family:var(--fd);font-weight:600;
+  font-size:18px;line-height:1.3;
+  overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;
+  color:var(--cream);
+}
+.pc-prices{display:flex;align-items:baseline;gap:9px;margin-top:auto;padding-top:6px}
+.pc-price{font-weight:800;font-size:22px;color:var(--gold2);font-family:var(--fs)}
+.pc-old{font-size:14px;color:var(--text3);text-decoration:line-through}
+.pc-footer{
+  padding:0 18px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pc-code{font-size:11px;color:var(--text3);letter-spacing:.3px}
+.pc-order{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 16px;border-radius:var(--r3);
+  background:linear-gradient(135deg,var(--gold),#b8933e);
+  color:#1a1200;font-size:12px;font-weight:800;
+  border:none;cursor:pointer;transition:all .22s;
+  font-family:var(--fs);letter-spacing:.3px;
+}
+.pc-order:hover{transform:scale(1.07);box-shadow:0 6px 20px var(--gold-glow2)}
+.pc-shimmer{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.04) 50%,transparent 70%);
+  background-size:300% 100%;
+  opacity:0;transition:opacity .3s;
+}
+.pcard:hover .pc-shimmer{opacity:1;animation:shimmer 1.5s ease}
+
+/* NO ITEMS */
+.no-items{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:72px 24px;gap:16px;
+  color:var(--text3);text-align:center;
+  border-radius:var(--r);border:1px solid var(--edge);
+  background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.005));
+}
+.no-items h3{font-family:var(--fd);font-size:24px;color:var(--text2);font-weight:400}
+.no-items p{font-size:14px;max-width:280px;line-height:1.7}
+
+/* ============================================
+   PRODUCT DRAWER
+   ============================================ */
+.drawer-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(5,5,10,0.75);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  animation:overlayIn .3s ease;
+}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(580px,100vw);z-index:1001;
+  background:rgba(10,10,17,0.98);
+  border-left:1px solid var(--edge2);
+  overflow-y:auto;display:flex;flex-direction:column;
+  animation:slideR .38s cubic-bezier(.2,.8,.3,1);
+  box-shadow:-36px 0 100px rgba(0,0,0,.7);
+}
+.drawer-rtl{
+  right:auto;left:0;border-left:none;border-right:1px solid var(--edge2);
+  animation:slideL .38s cubic-bezier(.2,.8,.3,1);
+}
+.drawer-header{
+  position:sticky;top:0;z-index:10;
+  padding:18px 22px;
+  background:rgba(10,10,17,0.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--edge);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.drawer-title{font-family:var(--fd);font-weight:600;font-size:17px;max-width:82%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--cream)}
+.drawer-body{padding:24px;flex:1;display:flex;flex-direction:column;gap:22px}
+.drawer-main-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r);display:block;transition:opacity .2s}
+.drawer-thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.d-thumb{
+  width:70px;height:70px;object-fit:cover;
+  border-radius:var(--r2);cursor:pointer;
+  border:2px solid transparent;transition:all .22s;
+}
+.d-thumb.active{border-color:var(--gold2);box-shadow:0 0 0 3px var(--gold-glow2)}
+.d-thumb:hover:not(.active){border-color:var(--edge2)}
+.drawer-cat{font-size:11px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.drawer-name{font-family:var(--fd);font-weight:600;font-size:clamp(24px,4vw,32px);line-height:1.2;color:var(--cream)}
+.drawer-desc{color:var(--text2);line-height:1.82;font-size:14.5px;font-weight:300}
+.drawer-price-row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.drawer-price{font-weight:900;font-size:clamp(30px,5vw,42px);color:var(--gold2);font-family:var(--fs)}
+.drawer-old{font-size:19px;color:var(--text3);text-decoration:line-through}
+.drawer-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.d-features{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-feat{
+  padding:14px;border-radius:var(--r2);
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--edge);
+  display:flex;flex-direction:column;gap:5px;
+}
+.d-feat-label{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.d-feat-val{font-size:13.5px;font-weight:600;color:var(--text)}
+.drawer-gold-line{height:1px;background:linear-gradient(to right,transparent,rgba(201,168,76,0.25),transparent);margin:2px 0}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer{
+  padding:32px clamp(16px,5vw,60px);
+  border-top:1px solid var(--edge);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  background:linear-gradient(to top,rgba(5,5,8,1),transparent);
+}
+.footer-brand{font-family:var(--fd);font-size:15px;font-weight:600;color:var(--text3)}
+.footer-brand em{color:var(--gold);font-style:normal}
+.footer-note{font-size:12px;color:var(--text3)}
+
+/* ============================================
+   LOGIN PAGE
+   ============================================ */
+.login-page{
+  min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:20px;
+  background:var(--ink);position:relative;overflow:hidden;
+}
+.login-card{width:100%;max-width:440px;position:relative;z-index:1}
+.login-logo-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:36px;
+}
+.login-logo{
+  width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(135deg,var(--gold) 0%,#7a5e20 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:30px;font-weight:700;color:#1a1200;font-style:italic;
+  box-shadow:0 10px 40px var(--gold-glow2),0 0 0 1px rgba(255,255,255,0.07);
+  margin-bottom:18px;
+}
+.login-heading{font-family:var(--fd);font-size:30px;font-weight:600;color:var(--cream);margin-bottom:6px;text-align:center}
+.login-sub{color:var(--text2);text-align:center;font-size:14px}
+.login-form{
+  padding:30px;border-radius:var(--r);
+  background:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+  border:1px solid var(--edge2);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  box-shadow:0 36px 80px rgba(0,0,0,.55);
+}
+.error-box{
+  background:rgba(240,62,92,0.08);border:1px solid rgba(240,62,92,0.25);
+  border-radius:var(--r2);padding:12px 16px;color:#fb7185;
+  font-size:13.5px;margin-bottom:18px;display:flex;align-items:center;gap:8px;
+}
+.demo-box{
+  background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);
+  border-radius:var(--r2);padding:14px 16px;margin-bottom:20px;
+  font-size:13px;line-height:1.9;color:var(--text2);
+}
+.demo-box strong{color:var(--gold2)}
+
+/* ============================================
+   ADMIN LAYOUT
+   ============================================ */
+.admin-wrap{display:flex;min-height:100vh}
+.sidebar{
+  width:264px;min-height:100vh;
+  background:rgba(10,10,15,0.99);
+  border-right:1px solid var(--edge);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;
+}
+.sidebar-rtl{border-right:none;border-left:1px solid var(--edge)}
+.sidebar-top{padding:24px 20px 20px;border-bottom:1px solid var(--edge)}
+.sb-logo{font-family:var(--fd);font-size:18px;font-weight:600;color:var(--gold2);display:flex;align-items:center;gap:10px}
+.sb-logo .logo-icon{width:30px;height:30px;font-size:16px;border-radius:8px}
+.sb-section{padding:18px 20px 6px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.4px}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;color:var(--text2);
+  cursor:pointer;transition:all .18s;
+  font-size:13.5px;font-weight:500;
+  border-left:3px solid transparent;
+  position:relative;
+}
+.sb-item:hover{background:rgba(255,255,255,0.03);color:var(--text)}
+.sb-item.active{
+  color:var(--gold2);
+  border-left-color:var(--gold);
+  background:rgba(201,168,76,0.05);
+}
+.sb-item-rtl{border-left:none;border-right:3px solid transparent}
+.sb-item-rtl.active{border-right-color:var(--gold)}
+.sidebar-foot{margin-top:auto;padding:18px 20px;border-top:1px solid var(--edge)}
+.admin-main{flex:1;min-width:0;overflow:hidden}
+.admin-inner{padding:clamp(20px,3vw,40px);max-width:1100px}
+
+/* PAGE TITLE */
+.page-title{
+  font-family:var(--fd);font-weight:600;
+  font-size:clamp(22px,3vw,32px);
+  margin-bottom:clamp(18px,2.5vw,30px);
+  color:var(--cream);display:flex;align-items:center;gap:12px;
+}
+.page-title-sub{font-size:14px;font-family:var(--fs);font-weight:400;color:var(--text3);margin-top:4px}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.stat-card{
+  padding:20px;border-radius:var(--r);
+  background:linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01));
+  border:1px solid var(--edge2);position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:90px;height:90px;border-radius:50%;
+  background:var(--sc,rgba(201,168,76,0.12));
+  filter:blur(24px);pointer-events:none;
+}
+.stat-n{font-weight:900;font-size:clamp(28px,3.5vw,38px);color:var(--sc,var(--gold2));font-family:var(--fs);line-height:1}
+.stat-l{font-size:12px;color:var(--text2);margin-top:5px;font-weight:500}
+
+/* TABLE */
+.table-wrap{border-radius:var(--r);overflow:hidden;border:1px solid var(--edge)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  padding:12px 16px;text-align:left;
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.9px;
+  background:rgba(255,255,255,0.02);border-bottom:1px solid var(--edge);
+}
+.tbl td{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13.5px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:rgba(201,168,76,0.025)}
+.tbl-rtl th,.tbl-rtl td{text-align:right}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;inset:0;z-index:1100;
+  background:rgba(5,5,10,0.88);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  animation:fadeIn .2s ease;
+}
+.modal{
+  background:rgba(11,13,22,0.99);border:1px solid var(--edge2);
+  border-radius:var(--r);width:100%;max-width:600px;
+  max-height:92vh;overflow-y:auto;
+  padding:clamp(20px,3vw,32px);
+  animation:scaleUp .26s cubic-bezier(.2,.8,.3,1);
+  box-shadow:0 48px 120px rgba(0,0,0,.8),0 0 0 1px rgba(201,168,76,0.06);
+}
+.modal-title{
+  font-family:var(--fd);font-weight:600;font-size:22px;
+  margin-bottom:22px;display:flex;align-items:center;gap:10px;color:var(--cream);
+}
+.modal-gold-bar{
+  height:2px;background:linear-gradient(to right,var(--gold),transparent);
+  margin-bottom:22px;border-radius:99px;
+}
+
+/* SPINNER */
+.spin{border:2.5px solid var(--edge2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+/* SECTION CARD */
+.section-card{
+  background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));
+  border:1px solid var(--edge2);border-radius:var(--r);
+  padding:clamp(18px,2.5vw,28px);margin-bottom:16px;
+}
+.section-card-title{
+  font-weight:700;font-size:14px;margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;color:var(--text);
+  font-family:var(--fs);text-transform:uppercase;letter-spacing:.6px;
+}
+
+/* IMG THUMB */
+.ithumb{width:54px;height:54px;object-fit:cover;border-radius:var(--r2);border:1px solid var(--edge2);flex-shrink:0}
+
+/* DISCOUNT ROW */
+.discount-block{
+  background:rgba(201,168,76,0.04);
+  border:1px solid rgba(201,168,76,0.14);
+  border-radius:var(--r2);padding:14px 16px;
+}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.mb4{margin-bottom:16px}.mb6{margin-bottom:24px}.mt4{margin-top:16px}
+.row{display:flex;align-items:center}
+.between{display:flex;align-items:center;justify-content:space-between}
+.end{display:flex;justify-content:flex-end;gap:10px}
+.gap2{gap:8px}.gap3{gap:12px}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:960px){
+  .admin-wrap{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative;min-height:auto;flex-direction:row;flex-wrap:wrap;padding:8px;overflow-x:auto;border-right:none;border-bottom:1px solid var(--edge)}
+  .sidebar-top{display:none}.sb-section{display:none}.sidebar-foot{display:none}
+  .sb-item{padding:9px 14px;border-left:none!important;border-right:none!important;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0}
+  .sb-item.active{border-bottom-color:var(--gold);border-left:none!important;background:transparent}
+  .admin-inner{padding:18px 16px}
+}
+@media(max-width:680px){
+  .g2{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .hero-ctas .btn:nth-child(2){display:none}
+  .hero-vdiv{display:none}
+  .hero-stats{gap:20px}
+  .d-features{grid-template-columns:1fr}
+  .scroll-hint{display:none}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .filter-bar{padding:12px}
+}
+@media(max-width:400px){
+  .pgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback,createContext,useContext,useMemo}=React;
+
+/* ── TRANSLATIONS ──────────────────────────── */
+const TX={
+  en:{dir:"ltr",sn:"LUXE",tl:"Rare finds. Refined taste.",
+    all:"All",ins:"In Stock",low:"Low Stock",oos:"Out of Stock",
+    oWA:"Order via WhatsApp",off:"OFF",noP:"No products found.",
+    adm:"Dashboard",stPg:"Stock Overview",prPg:"Products",addPg:"Add / Delete",
+    catPg:"Categories",stgPg:"Settings",
+    login:"Sign In",email:"Email",pw:"Password",lBtn:"Sign In",
+    pName:"Product Name",desc:"Description",price:"Price ($)",cat:"Category",
+    code:"Product Code",imgs:"Images",vis:"Visibility",
+    da:"Discount Active",dp:"Discount %",
+    save:"Save Changes",cancel:"Cancel",del:"Delete",addN:"Add New",
+    stSt:"Stock Status",waNum:"WhatsApp Number",waTpl:"Message Template",
+    banTxt:"Hero Tagline",upImg:"Upload Image",
+    confDel:"Delete this product permanently?",accDen:"Access Denied",
+    visY:"Visible",visN:"Hidden",search:"Search products…",
+    allCat:"All Categories",logout:"Sign Out",addCat:"Add Category",
+    catN:"Category name",nocat:"No categories yet",
+    logoURL:"Logo Image URL",banURL:"Hero Banner URL",saveSt:"Save Settings",
+    freeS:"Free Shipping",secP:"Secure Payment",easyR:"30-Day Returns",sup:"24/7 Support",
+  },
+  ar:{dir:"rtl",sn:"لوكس",tl:"اكتشف المنتجات الفاخرة",
+    all:"الكل",ins:"متوفر",low:"كمية محدودة",oos:"نفذ المخزون",
+    oWA:"اطلب عبر واتساب",off:"خصم",noP:"لا توجد منتجات.",
+    adm:"لوحة التحكم",stPg:"نظرة على المخزون",prPg:"المنتجات",addPg:"إضافة / حذف",
+    catPg:"الفئات",stgPg:"الإعدادات",
+    login:"تسجيل الدخول",email:"البريد الإلكتروني",pw:"كلمة المرور",lBtn:"دخول",
+    pName:"اسم المنتج",desc:"الوصف",price:"السعر ($)",cat:"الفئة",
+    code:"رمز المنتج",imgs:"الصور",vis:"الظهور",
+    da:"تفعيل الخصم",dp:"نسبة الخصم %",
+    save:"حفظ",cancel:"إلغاء",del:"حذف",addN:"إضافة جديد",
+    stSt:"حالة المخزون",waNum:"رقم واتساب",waTpl:"قالب الرسالة",
+    banTxt:"عنوان البانر",upImg:"رفع صورة",
+    confDel:"هل تريد حذف هذا المنتج نهائياً؟",accDen:"وصول مرفوض",
+    visY:"ظاهر",visN:"مخفي",search:"ابحث عن منتج…",
+    allCat:"جميع الفئات",logout:"تسجيل الخروج",addCat:"إضافة فئة",
+    catN:"اسم الفئة",nocat:"لا توجد فئات بعد",
+    logoURL:"رابط الشعار",banURL:"رابط البانر",saveSt:"حفظ الإعدادات",
+    freeS:"شحن مجاني",secP:"دفع آمن",easyR:"إرجاع ٣٠ يوم",sup:"دعم ٢٤/٧",
+  },
+  fr:{dir:"ltr",sn:"LUXE",tl:"Des trouvailles rares. Un goût raffiné.",
+    all:"Tous",ins:"En stock",low:"Stock limité",oos:"Épuisé",
+    oWA:"Commander via WhatsApp",off:"REMISE",noP:"Aucun produit trouvé.",
+    adm:"Tableau de bord",stPg:"Aperçu stock",prPg:"Produits",addPg:"Ajouter / Suppr.",
+    catPg:"Catégories",stgPg:"Paramètres",
+    login:"Connexion",email:"E-mail",pw:"Mot de passe",lBtn:"Se connecter",
+    pName:"Nom du produit",desc:"Description",price:"Prix ($)",cat:"Catégorie",
+    code:"Code produit",imgs:"Images",vis:"Visibilité",
+    da:"Remise active",dp:"% remise",
+    save:"Enregistrer",cancel:"Annuler",del:"Supprimer",addN:"Ajouter",
+    stSt:"Statut stock",waNum:"Numéro WhatsApp",waTpl:"Modèle message",
+    banTxt:"Accroche héros",upImg:"Télécharger image",
+    confDel:"Supprimer définitivement ce produit ?",accDen:"Accès refusé",
+    visY:"Visible",visN:"Masqué",search:"Rechercher…",
+    allCat:"Toutes catégories",logout:"Déconnexion",addCat:"Ajouter",
+    catN:"Nom de catégorie",nocat:"Aucune catégorie",
+    logoURL:"URL logo",banURL:"URL bannière",saveSt:"Sauvegarder",
+    freeS:"Livraison gratuite",secP:"Paiement sécurisé",easyR:"Retours 30j",sup:"Support 24/7",
+  },
+};
+
+/* ── PRODUCT DATA ──────────────────────────── */
+const PRODS=[
+  {id:"p1",name:"Sony WH-1000XM5",desc:"Industry-leading noise cancellation. 30-hour battery, multipoint Bluetooth, and crystal-clear calls. The definitive headphone for audiophiles.",price:379.99,da:true,dp:20,imgs:["https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&q=85","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=85","https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=85"],stock:32,status:"in_stock",cat:"Electronics",code:"SON-WH1000-001",vis:true},
+  {id:"p2",name:"Rolex Submariner",desc:"The iconic diver's watch. 300m water resistance, ceramic bezel, and the legendary Oyster bracelet. Crafted in 904L stainless steel. A true legacy piece.",price:9250,da:false,dp:0,imgs:["https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800&q=85","https://images.unsplash.com/photo-1622434641406-a158123450f9?w=800&q=85","https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=85"],stock:4,status:"low_stock",cat:"Watches",code:"ROL-SUB-002",vis:true},
+  {id:"p3",name:"Louis Vuitton Keepall",desc:"The ultimate travel companion since 1930. LV monogram canvas, cowhide trim, and polished brass. The bag that defined luxury travel.",price:1850,da:true,dp:15,imgs:["https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=85","https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=85"],stock:0,status:"out_of_stock",cat:"Bags",code:"LV-KEP-003",vis:true},
+  {id:"p4",name:"AirPods Pro 2nd Gen",desc:"Adaptive Transparency, Personalized Spatial Audio, 2× more ANC. USB-C MagSafe case included. The future of personal audio.",price:249,da:false,dp:0,imgs:["https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=800&q=85","https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=85"],stock:80,status:"in_stock",cat:"Electronics",code:"APP-PRO2-004",vis:true},
+  {id:"p5",name:"Hermès Birkin 35",desc:"The world's most coveted handbag. Hand-stitched Togo calfskin, palladium hardware. An investment that appreciates every year.",price:12500,da:false,dp:0,imgs:["https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=85","https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=85"],stock:2,status:"low_stock",cat:"Bags",code:"HER-BRK-005",vis:true},
+  {id:"p6",name:"Samsung Neo QLED 85\"",desc:"Quantum Matrix Technology, 14-bit processing, and Object Tracking Sound+. The most immersive home cinema experience on the market.",price:3299,da:true,dp:22,imgs:["https://images.unsplash.com/photo-1593359677879-a4bb92f829e1?w=800&q=85","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=85"],stock:12,status:"in_stock",cat:"Electronics",code:"SAM-NEO85-006",vis:true},
+  {id:"p7",name:"Bottega Veneta Jodie",desc:"Intrecciato-woven nappa leather, signature knot closure. Italian craft at its finest — the defining It-bag of contemporary luxury.",price:3100,da:true,dp:10,imgs:["https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=800&q=85","https://images.unsplash.com/photo-1614179818411-5d5ef98c9ed3?w=800&q=85"],stock:9,status:"in_stock",cat:"Bags",code:"BV-JOD-007",vis:true},
+  {id:"p8",name:"Audemars Piguet Royal Oak",desc:"The watch that revolutionised luxury. Octagonal bezel, integrated bracelet, Grande Tapisserie dial. Calibre 3120 automatic. A horological icon.",price:28500,da:false,dp:0,imgs:["https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=85","https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?w=800&q=85"],stock:1,status:"low_stock",cat:"Watches",code:"AP-RO-008",vis:true},
+  {id:"p9",name:"Dyson V15 Detect",desc:"Laser reveals microscopic dust. Auto-adapts suction across 60 minutes of fade-free power. Full-seal HEPA filtration.",price:749,da:true,dp:18,imgs:["https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=85","https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=85"],stock:25,status:"in_stock",cat:"Home",code:"DYS-V15-009",vis:true},
+  {id:"p10",name:"Chanel No.5 EDP",desc:"The world's most iconic fragrance since 1921. Powdery aldehydic floral — ylang-ylang, jasmine, sandalwood on warm amber. Timeless.",price:195,da:false,dp:0,imgs:["https://images.unsplash.com/photo-1541643600914-78b084683702?w=800&q=85","https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=85"],stock:40,status:"in_stock",cat:"Beauty",code:"CHA-NO5-010",vis:true},
+  {id:"p11",name:"Nespresso Creatista Plus",desc:"Barista-quality coffee at home. 11 grind settings, auto steam wand, brushed stainless steel. For the true espresso connoisseur.",price:499,da:true,dp:12,imgs:["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=85","https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=85"],stock:18,status:"in_stock",cat:"Home",code:"NES-CRE-011",vis:true},
+  {id:"p12",name:"Bose Soundbar 900",desc:"Dolby Atmos, TrueSpace technology, 10-mic array. Works with every major voice assistant. Pure acoustic engineering.",price:849,da:false,dp:0,imgs:["https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&q=85"],stock:0,status:"out_of_stock",cat:"Electronics",code:"BOS-900-012",vis:true},
+];
+const DEF_ST={wa:"1234567890",tpl:"Hi! I'd like to order:\n✨ {name}\n🔖 Code: {code}\n💰 Price: {price}\n\nPlease confirm availability.",sn:"LUXE",tag:"Rare finds. Refined taste.",logo:"",banner:"https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"};
+const DEF_CATS=["Electronics","Watches","Bags","Home","Beauty"];
+
+/* ── MOCK DB ───────────────────────────────── */
+class DB{
+  constructor(){
+    this._p=[...PRODS];this._s={...DEF_ST};this._c=[...DEF_CATS];
+    this._us={"dev@luxe.com":{role:"developer",name:"Dev"},"owner@luxe.com":{role:"owner",name:"Owner"},"admin@luxe.com":{role:"admin",name:"Admin"}};
+    this._u=null;this._l={};
+  }
+  _emit(ch){(this._l[ch]||[]).forEach(f=>f())}
+  _on(ch,f){if(!this._l[ch])this._l[ch]=[];this._l[ch].push(f);return()=>{this._l[ch]=this._l[ch].filter(x=>x!==f)}}
+  async signIn(em,pw){
+    await new Promise(r=>setTimeout(r,700));
+    const u=this._us[em];
+    if(!u||pw!=="demo1234")throw new Error("Wrong credentials — try demo1234");
+    this._u={email:em,...u};return this._u;
+  }
+  signOut(){this._u=null}
+  getUser(){return this._u}
+  onProducts(f){f([...this._p]);return this._on("p",()=>f([...this._p]))}
+  async addProduct(d){const p={id:"px"+Date.now(),...d};this._p.push(p);this._emit("p");return p}
+  async updProduct(id,d){const i=this._p.findIndex(x=>x.id===id);if(i!==-1){this._p[i]={...this._p[i],...d};this._emit("p")}}
+  async delProduct(id){this._p=this._p.filter(x=>x.id!==id);this._emit("p")}
+  onCats(f){f([...this._c]);return this._on("c",()=>f([...this._c]))}
+  async addCat(n){if(!this._c.includes(n)){this._c.push(n);this._emit("c")}}
+  async delCat(n){this._c=this._c.filter(x=>x!==n);this._emit("c")}
+  onSettings(f){f({...this._s});return this._on("s",()=>f({...this._s}))}
+  async updSettings(d){this._s={...this._s,...d};this._emit("s")}
+  async uploadImg(file){await new Promise(r=>setTimeout(r,900));return URL.createObjectURL(file)}
+}
+const db=new DB();
+
+/* ── CONTEXT ───────────────────────────────── */
+const Ctx=createContext(null);
+const useApp=()=>useContext(Ctx);
+
+/* ── UTILS ─────────────────────────────────── */
+const disc=(p,pct)=>+(p*(1-pct/100)).toFixed(2);
+const fp=p=>p>=1000?p.toLocaleString("en-US",{minimumFractionDigits:0}):(+p).toFixed(2);
+const sCol=s=>s==="in_stock"?"#4ade80":s==="low_stock"?"#fbbf24":"#fb7185";
+const sLbl=(s,t)=>s==="in_stock"?t.ins:s==="low_stock"?t.low:t.oos;
+const buildWA=(p,st,t)=>{
+  const price=p.da?disc(p.price,p.dp):p.price;
+  const msg=(st.tpl||"Hi, order:\nProduct: {name}\nCode: {code}\nPrice: {price}").replace("{name}",p.name).replace("{code}",p.code).replace("{price}","$"+fp(price));
+  return`https://wa.me/${st.wa||"1234567890"}?text=${encodeURIComponent(msg)}`;
+};
+
+/* ── ICONS ─────────────────────────────────── */
+const Ic=({n,s=16,c="currentColor",strokeWidth=1.8})=>{
+  const d={
+    search:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth} strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+    wa:<svg width={s} height={s} viewBox="0 0 24 24" fill={c}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>,
+    x:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+    edit:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+    trash:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>,
+    plus:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+    tag:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
+    cog:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>,
+    logout:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+    user:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    pkg:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M12.89 1.45l8 4A2 2 0 0122 7.24v9.53a2 2 0 01-1.11 1.79l-8 4a2 2 0 01-1.78 0l-8-4A2 2 0 012 16.77V7.24a2 2 0 011.11-1.79l8-4a2 2 0 011.78 0z"/><polyline points="2.32 6.16 12 11 21.68 6.16"/><line x1="12" y1="22.76" x2="12" y2="11"/></svg>,
+    bar:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>,
+    store:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+    eye:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+    eyeOff:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>,
+    check:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>,
+    chev:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><polyline points="6 9 12 15 18 9"/></svg>,
+    shield:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+    heart:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
+    truck:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>,
+    lock:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
+    refresh:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
+    phone:<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={strokeWidth}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.72 9.72a19.79 19.79 0 01-3.07-8.67A2 2 0 012.63 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 8.6a16 16 0 006 6l.96-.96a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>,
+  };
+  return d[n]||null;
+};
+
+/* ── STATUS TAG ────────────────────────────── */
+const STag=({status})=>{
+  const{t}=useApp();
+  const cls=status==="in_stock"?"t-green":status==="low_stock"?"t-yellow":"t-red";
+  return<span className={`tag ${cls}`}>
+    <span className="sdot" style={{background:sCol(status)}}/>
+    {sLbl(status,t)}
+  </span>;
+};
+
+/* ── PRODUCT DRAWER ────────────────────────── */
+const PDrawer=({p,onClose})=>{
+  const{t,st,lang}=useApp();
+  const[ai,setAi]=useState(0);
+  const isR=TX[lang].dir==="rtl";
+  useEffect(()=>{document.body.style.overflow="hidden";return()=>{document.body.style.overflow=""};},[]);
+  if(!p)return null;
+  const dp=p.da?disc(p.price,p.dp):p.price;
+  return<>
+    <div className="drawer-overlay" onClick={onClose}/>
+    <div className={`drawer ${isR?"drawer-rtl":""}`} dir={TX[lang].dir}>
+      <div className="drawer-header">
+        <span className="drawer-title">{p.name}</span>
+        <button className="btn btn-ghost btn-sm" onClick={onClose}><Ic n="x" s={16}/></button>
+      </div>
+      <div className="drawer-body">
+        {p.imgs?.length>0&&<>
+          <div style={{position:"relative"}}>
+            <img src={p.imgs[ai]} alt={p.name} className="drawer-main-img"/>
+            {p.da&&<span style={{position:"absolute",top:14,left:14}} className="pc-tag-disc">{p.dp}% {t.off}</span>}
+          </div>
+          {p.imgs.length>1&&<div className="drawer-thumbs">
+            {p.imgs.map((img,i)=><img key={i} src={img} alt="" className={`d-thumb ${i===ai?"active":""}`} onClick={()=>setAi(i)}/>)}
+          </div>}
+        </>}
+        <div>
+          <div className="drawer-cat">{p.cat}</div>
+          <h2 className="drawer-name">{p.name}</h2>
+        </div>
+        <p className="drawer-desc">{p.desc}</p>
+        <div className="drawer-price-row">
+          <span className="drawer-price">${fp(dp)}</span>
+          {p.da&&<span className="drawer-old">${fp(p.price)}</span>}
+          {p.da&&<span className="tag t-red">{p.dp}% {t.off}</span>}
+        </div>
+        <div className="drawer-meta">
+          <STag status={p.status}/>
+          <span className="tag t-gold" style={{fontSize:11}}>{p.code}</span>
+        </div>
+        <div className="drawer-gold-line"/>
+        <div className="d-features">
+          {[{i:"truck",l:t.freeS,v:"On orders over $500"},{i:"lock",l:t.secP,v:"SSL encrypted"},{i:"refresh",l:t.easyR,v:t.easyR},{i:"phone",l:t.sup,v:"Available 24/7"}].map((f,i)=>(
+            <div key={i} className="d-feat">
+              <div className="d-feat-label"><Ic n={f.i} s={12} c="var(--gold2)"/>{f.l}</div>
+              <div className="d-feat-val">{f.v}</div>
+            </div>
+          ))}
+        </div>
+        <a href={buildWA(p,st,t)} target="_blank" rel="noopener noreferrer"
+          className={`btn btn-wa ${p.status==="out_of_stock"?"off":""}`}
+          style={{textDecoration:"none"}}>
+          <Ic n="wa" s={22} c="#fff"/> {t.oWA}
+        </a>
+      </div>
+    </div>
+  </>;
+};
+
+/* ── PRODUCT CARD ──────────────────────────── */
+const PCard=({p,onClick,delay=0})=>{
+  const{st,t}=useApp();
+  const dp=p.da?disc(p.price,p.dp):p.price;
+  return<div className="pcard" style={{animationDelay:`${delay}ms`,animation:`fadeUp .5s ${delay}ms both`}} onClick={onClick}>
+    <div className="pc-media">
+      <img src={p.imgs?.[0]||"https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600"} alt={p.name} className="pc-img" loading="lazy"/>
+      <div className="pc-overlay"/>
+      <div className="pc-overlay2"/>
+      <div className="pc-shimmer"/>
+      {p.da&&<span className="pc-tag-disc">{p.dp}% OFF</span>}
+      <div className="pc-stock"><STag status={p.status}/></div>
+      <button className="pc-fav" onClick={e=>{e.stopPropagation()}} title="Wishlist">
+        <Ic n="heart" s={14} c="var(--rose)"/>
+      </button>
+    </div>
+    <div className="pc-body">
+      <div className="pc-cat">{p.cat}</div>
+      <div className="pc-name">{p.name}</div>
+      <div className="pc-prices">
+        <span className="pc-price">${fp(dp)}</span>
+        {p.da&&<span className="pc-old">${fp(p.price)}</span>}
+      </div>
+    </div>
+    <div className="pc-footer">
+      <span className="pc-code">{p.code}</span>
+      <button className="pc-order" onClick={e=>{e.stopPropagation();window.open(buildWA(p,st,t),"_blank")}}>
+        <Ic n="wa" s={12} c="#1a1200"/>Order
+      </button>
+    </div>
+  </div>;
+};
+
+/* ── LANG SWITCHER ─────────────────────────── */
+const LS=()=>{
+  const{lang,setLang}=useApp();
+  return<div className="lang-wrap">
+    {[["en","EN"],["ar","ع"],["fr","FR"]].map(([c,l])=>(
+      <button key={c} className={`lang-btn ${lang===c?"active":""}`} onClick={()=>setLang(c)}>{l}</button>
+    ))}
+  </div>;
+};
+
+/* ── STORE PAGE ────────────────────────────── */
+const StorePage=()=>{
+  const{prods,st,t,lang,user,setPage}=useApp();
+  const[sel,setSel]=useState(null);
+  const[srch,setSrch]=useState("");
+  const[cat,setCat]=useState("all");
+  const[ddO,setDdO]=useState(false);
+  const[scrolled,setScrolled]=useState(false);
+  const ddRef=useRef();
+  const isR=TX[lang].dir==="rtl";
+  const cats=useMemo(()=>[...new Set(prods.map(p=>p.cat).filter(Boolean))],[prods]);
+  const filtered=useMemo(()=>prods.filter(p=>{
+    if(!p.vis)return false;
+    if(cat!=="all"&&p.cat!==cat)return false;
+    if(srch&&!p.name.toLowerCase().includes(srch.toLowerCase())&&!p.code.toLowerCase().includes(srch.toLowerCase()))return false;
+    return true;
+  }),[prods,cat,srch]);
+  useEffect(()=>{
+    const h=()=>setScrolled(window.scrollY>30);
+    window.addEventListener("scroll",h,{passive:true});return()=>window.removeEventListener("scroll",h);
+  },[]);
+  useEffect(()=>{
+    const h=e=>{if(ddRef.current&&!ddRef.current.contains(e.target))setDdO(false)};
+    document.addEventListener("mousedown",h);return()=>document.removeEventListener("mousedown",h);
+  },[]);
+  const rc=user?.role==="developer"?"t-dev":user?.role==="owner"?"t-own":"t-adm";
+  const strips=["Complimentary Shipping Over $500","New Arrivals Every Week","100% Authenticated Products","WhatsApp Concierge Ordering","Exclusive Curator Selection","White Glove Customer Service"];
+
+  return<div dir={TX[lang].dir}>
+    {/* HEADER */}
+    <header className={`header ${scrolled?"scrolled":""}`}>
+      <div className="header-logo" onClick={()=>window.scrollTo({top:0,behavior:"smooth"})}>
+        <div className="logo-icon">L</div>
+        <span className="logo-name"><em>{(st.sn||"LUXE").split(" ")[0]}</em>{(st.sn||"LUXE").includes(" ")?" "+(st.sn.split(" ").slice(1).join(" ")):"" }</span>
+      </div>
+      <div className="header-right">
+        <LS/>
+        {user?(
+          <div className="adrop-wrap" ref={ddRef}>
+            <button className="admin-trigger" onClick={()=>setDdO(v=>!v)}>
+              <span className="gold-dot"/>
+              {t.adm}
+              <Ic n="chev" s={13}/>
+            </button>
+            {ddO&&<div className="adrop">
+              <div className="adrop-head">
+                <div style={{fontSize:12,color:"var(--text3)",marginBottom:5}}>{user.email}</div>
+                <span className={`tag ${rc}`}>{user.role}</span>
+              </div>
+              {[
+                ["stock",t.stPg,"bar"],
+                ["products-admin",t.prPg,"pkg"],
+                ...( ["owner","developer"].includes(user.role)?[
+                  ["add-product",t.addPg,"plus"],
+                  ["categories",t.catPg,"tag"],
+                  ["store-settings",t.stgPg,"cog"],
+                ]:[])
+              ].map(([pg,label,icon])=>(
+                <div key={pg} className="adrop-item" onClick={()=>{setPage(pg);setDdO(false)}}>
+                  <Ic n={icon} s={15}/>{label}
+                </div>
+              ))}
+              <div className="adrop-sep"/>
+              <div className="adrop-item danger" onClick={()=>{db.signOut();window.location.reload()}}>
+                <Ic n="logout" s={15} c="currentColor"/>{t.logout}
+              </div>
+            </div>}
+          </div>
+        ):(
+          <button className="btn btn-ghost btn-sm" onClick={()=>setPage("login")}>
+            <Ic n="user" s={15}/>{t.login}
+          </button>
+        )}
+      </div>
+    </header>
+
+    {/* HERO */}
+    <section className="hero">
+      <div className="hero-bg">
+        <img src={st.banner||"https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"} alt="" className="hero-bg-img"/>
+        <div className="hero-overlay"/>
+        <div className="hero-grain"/>
+      </div>
+      <div className="orb orb-1"/><div className="orb orb-2"/><div className="orb orb-3"/>
+      <div className="hero-content">
+        <div className="hero-label">
+          <div className="hero-label-line"/>
+          Premium Catalog 2025
+          <div className="hero-label-line"/>
+        </div>
+        <h1 className="hero-h1">
+          <em>Discover</em>
+          <strong>{st.sn||"LUXE"}</strong>
+          <em>Collection</em>
+        </h1>
+        <p className="hero-sub">{st.tag||t.tl}</p>
+        <div className="hero-ctas">
+          <button className="btn btn-gold" style={{fontSize:15,padding:"14px 32px"}}
+            onClick={()=>document.getElementById("catalog")?.scrollIntoView({behavior:"smooth"})}>
+            View Collection
+          </button>
+          {!user&&<button className="btn btn-outline" style={{fontSize:15,padding:"14px 24px"}} onClick={()=>setPage("login")}>
+            <Ic n="shield" s={15}/> Admin Access
+          </button>}
+        </div>
+        <div className="hero-stats">
+          {[{n:"500+",l:"Curated Products"},{n:"12K+",l:"Happy Clients"},{n:"100%",l:"Authentic"}].map((s,i)=>(
+            <React.Fragment key={i}>
+              {i>0&&<div className="hero-vdiv"/>}
+              <div className="hero-stat">
+                <div className="hero-stat-n"><span>{s.n}</span></div>
+                <div className="hero-stat-l">{s.l}</div>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+      <div className="scroll-hint" onClick={()=>document.getElementById("catalog")?.scrollIntoView({behavior:"smooth"})}>
+        <div className="scroll-track"/>
+        <div className="scroll-text">Scroll</div>
+      </div>
+    </section>
+
+    {/* MARQUEE */}
+    <div className="marquee-wrap">
+      <div className="marquee-inner">
+        {[...strips,...strips].map((item,i)=>(
+          <span key={i} className="m-item"><span className="m-gem">◆</span>{item}</span>
+        ))}
+      </div>
+    </div>
+
+    {/* CATALOG */}
+    <div className="catalog" id="catalog">
+      <div className="catalog-header">
+        <div className="section-eyebrow">
+          <div className="eyebrow-line"/>
+          Catalog
+          <div className="eyebrow-line"/>
+        </div>
+        <h2 className="section-title">Our <strong>Collection</strong></h2>
+        <div className="section-count">{filtered.length} product{filtered.length!==1?"s":""}{cat!=="all"?` in ${cat}`:""}</div>
+      </div>
+
+      <div className="filter-bar">
+        <div className="search-box">
+          <Ic n="search" s={16}/>
+          <input className="inp" style={{paddingLeft:44}} placeholder={t.search} value={srch} onChange={e=>setSrch(e.target.value)}/>
+        </div>
+        <div className="pills">
+          <button className={`pill ${cat==="all"?"active":""}`} onClick={()=>setCat("all")}>{t.all}</button>
+          {cats.map(c=><button key={c} className={`pill ${cat===c?"active":""}`} onClick={()=>setCat(c)}>{c}</button>)}
+        </div>
+      </div>
+
+      {filtered.length===0?(
+        <div className="no-items">
+          <Ic n="pkg" s={48} c="var(--text3)"/>
+          <h3>Nothing found</h3>
+          <p>{t.noP}</p>
+        </div>
+      ):(
+        <div className="pgrid">
+          {filtered.map((p,i)=><PCard key={p.id} p={p} onClick={()=>setSel(p)} delay={i*40}/>)}
+        </div>
+      )}
+    </div>
+
+    {/* FOOTER */}
+    <footer className="footer">
+      <div className="footer-brand">⬡ <em>{st.sn||"LUXE"}</em></div>
+      <div className="footer-note">Powered by Firebase · Orders via WhatsApp · © 2025</div>
+    </footer>
+
+    {sel&&<PDrawer p={sel} onClose={()=>setSel(null)}/>}
+  </div>;
+};
+
+/* ── LOGIN PAGE ────────────────────────────── */
+const LoginPage=()=>{
+  const{t,setUser,setPage,lang}=useApp();
+  const[em,setEm]=useState("dev@luxe.com");
+  const[pw,setPw]=useState("demo1234");
+  const[loading,setLoading]=useState(false);
+  const[err,setErr]=useState("");
+  const go=async()=>{
+    setLoading(true);setErr("");
+    try{const u=await db.signIn(em,pw);setUser(u);setPage("store");}
+    catch(e){setErr(e.message);}
+    setLoading(false);
+  };
+  return<div className="login-page" dir={TX[lang].dir}>
+    <div className="orb" style={{width:500,height:500,top:-100,left:-100,background:"radial-gradient(circle,rgba(201,168,76,.08),transparent 65%)",animation:"drift1 14s ease-in-out infinite",position:"fixed"}}/>
+    <div className="orb" style={{width:400,height:400,bottom:-80,right:-80,background:"radial-gradient(circle,rgba(79,172,254,.05),transparent 65%)",animation:"drift2 18s ease-in-out infinite",position:"fixed"}}/>
+    <div className="login-card" style={{animation:"fadeUp .6s .1s both"}}>
+      <div className="login-logo-wrap">
+        <div className="login-logo">L</div>
+        <h2 className="login-heading">Welcome Back</h2>
+        <p className="login-sub">Sign in to manage your LUXE store</p>
+      </div>
+      <div className="login-form">
+        {err&&<div className="error-box"><Ic n="x" s={16} c="var(--rose)"/>{err}</div>}
+        <div className="demo-box">
+          <strong>Demo Accounts</strong> — password: <strong>demo1234</strong><br/>
+          dev@luxe.com → Developer (full access)<br/>
+          owner@luxe.com → Owner<br/>
+          admin@luxe.com → Admin
+        </div>
+        <div className="field mb4">
+          <label>{t.email}</label>
+          <input className="inp" type="email" value={em} onChange={e=>setEm(e.target.value)}/>
+        </div>
+        <div className="field" style={{marginBottom:20}}>
+          <label>{t.pw}</label>
+          <input className="inp" type="password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/>
+        </div>
+        <button className="btn btn-gold" style={{width:"100%",padding:"14px",fontSize:15}} onClick={go} disabled={loading}>
+          {loading?<span className="spin" style={{width:20,height:20}}/>:<><Ic n="shield" s={16} c="#1a1200"/>{t.lBtn}</>}
+        </button>
+        <button className="btn btn-ghost" style={{width:"100%",padding:"13px",marginTop:10}} onClick={()=>setPage("store")}>← Back to Store</button>
+      </div>
+    </div>
+  </div>;
+};
+
+/* ── ADMIN LAYOUT ──────────────────────────── */
+const ALayout=({children,active})=>{
+  const{t,user,setPage,lang}=useApp();
+  const isR=TX[lang].dir==="rtl";
+  if(!user)return<div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",flexDirection:"column",gap:16,padding:20}}>
+    <Ic n="shield" s={52} c="var(--rose)"/>
+    <div style={{fontSize:22,fontFamily:"var(--fd)",fontWeight:600,color:"var(--text2)"}}>{t.accDen}</div>
+    <button className="btn btn-gold" onClick={()=>setPage("login")}><Ic n="user" s={15} c="#1a1200"/>{t.login}</button>
+  </div>;
+  const nav=[
+    {k:"stock",l:t.stPg,i:"bar",r:["admin","owner","developer"]},
+    {k:"products-admin",l:t.prPg,i:"pkg",r:["admin","owner","developer"]},
+    {k:"add-product",l:t.addPg,i:"plus",r:["owner","developer"]},
+    {k:"categories",l:t.catPg,i:"tag",r:["owner","developer"]},
+    {k:"store-settings",l:t.stgPg,i:"cog",r:["owner","developer"]},
+  ].filter(x=>x.r.includes(user.role));
+  const rc=user.role==="developer"?"t-dev":user.role==="owner"?"t-own":"t-adm";
+  return<div className="admin-wrap" dir={TX[lang].dir}>
+    <aside className={`sidebar ${isR?"sidebar-rtl":""}`}>
+      <div className="sidebar-top">
+        <div className="sb-logo"><div className="logo-icon" style={{width:30,height:30,fontSize:15,borderRadius:8}}>L</div>LUXE ADMIN</div>
+      </div>
+      <div className="sb-section">Navigation</div>
+      {nav.map(item=>(
+        <div key={item.k} className={`sb-item ${isR?"sb-item-rtl":""} ${active===item.k?"active":""}`} onClick={()=>setPage(item.k)}>
+          <Ic n={item.i} s={16}/><span>{item.l}</span>
+        </div>
+      ))}
+      <div className="sidebar-foot">
+        <div style={{fontSize:12,color:"var(--text3)",marginBottom:6,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user.email}</div>
+        <span className={`tag ${rc}`} style={{marginBottom:14,display:"inline-flex"}}>{user.role}</span>
+        <div style={{display:"flex",gap:8,marginTop:8}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setPage("store")}><Ic n="store" s={13}/>Store</button>
+          <button className="btn btn-danger btn-sm" onClick={()=>{db.signOut();setPage("store")}}><Ic n="logout" s={13} c="var(--rose)"/></button>
+        </div>
+      </div>
+    </aside>
+    <div className="admin-main"><div className="admin-inner">{children}</div></div>
+  </div>;
+};
+
+/* ── EDIT MODAL ────────────────────────────── */
+const EditModal=({pr,cats,onClose,role})=>{
+  const{t}=useApp();
+  const full=["owner","developer"].includes(role);
+  const[f,setF]=useState({
+    name:pr?.name||"",desc:pr?.desc||"",price:pr?.price||"",
+    cat:pr?.cat||cats[0]||"",code:pr?.code||"",
+    da:pr?.da||false,dp:pr?.dp||0,
+    stock:pr?.stock||0,status:pr?.status||"in_stock",
+    vis:pr?.vis!==false,imgs:pr?.imgs||[],
+  });
+  const[saving,setSaving]=useState(false);
+  const[uploading,setUp]=useState(false);
+  const set=(k,v)=>setF(x=>({...x,[k]:v}));
+  const ndp=f.da&&f.price?disc(+f.price,+f.dp):null;
+  const save=async()=>{
+    setSaving(true);
+    const d={...f,price:+f.price,dp:+f.dp,stock:+f.stock};
+    if(pr)await db.updProduct(pr.id,d);else await db.addProduct(d);
+    setSaving(false);onClose();
+  };
+  const upImg=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    setUp(true);const url=await db.uploadImg(file);set("imgs",[...f.imgs,url]);setUp(false);
+  };
+  return<div className="modal-bg">
+    <div className="modal">
+      <div className="modal-title">
+        {pr?<><Ic n="edit" s={20} c="var(--gold2)"/>Edit Product</>:<><Ic n="plus" s={20} c="var(--gold2)"/>Add Product</>}
+      </div>
+      <div className="modal-gold-bar"/>
+      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {full&&<>
+          <div className="field"><label>{t.pName}</label><input className="inp" value={f.name} onChange={e=>set("name",e.target.value)} placeholder="e.g. Sony WH-1000XM5"/></div>
+          <div className="field"><label>{t.desc}</label><textarea className="ta" value={f.desc} onChange={e=>set("desc",e.target.value)} placeholder="Describe this product…"/></div>
+          <div className="g2">
+            <div className="field"><label>{t.cat}</label>
+              <select className="sel" value={f.cat} onChange={e=>set("cat",e.target.value)}>
+                {cats.map(c=><option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="field"><label>{t.code}</label><input className="inp" value={f.code} onChange={e=>set("code",e.target.value)} placeholder="SKU-000"/></div>
+          </div>
+        </>}
+        <div className="g2">
+          <div className="field"><label>{t.price}</label><input className="inp" type="number" step="0.01" value={f.price} onChange={e=>set("price",e.target.value)} placeholder="0.00"/></div>
+          <div className="field"><label>{t.stSt}</label>
+            <select className="sel" value={f.status} onChange={e=>set("status",e.target.value)}>
+              <option value="in_stock">{t.ins}</option>
+              <option value="low_stock">{t.low}</option>
+              <option value="out_of_stock">{t.oos}</option>
+            </select>
+          </div>
+        </div>
+        {/* Discount Block */}
+        <div className="discount-block">
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:f.da?14:0}}>
+            <span style={{fontWeight:600,fontSize:14,display:"flex",alignItems:"center",gap:8,color:"var(--text)"}}><Ic n="tag" s={15} c="var(--gold2)"/>{t.da}</span>
+            <label className="tog"><input type="checkbox" checked={f.da} onChange={e=>set("da",e.target.checked)}/><span className="tog-s"/></label>
+          </div>
+          {f.da&&<div className="g2">
+            <div className="field"><label>{t.dp}</label><input className="inp" type="number" min={1} max={99} value={f.dp} onChange={e=>set("dp",e.target.value)}/></div>
+            <div className="field"><label>Discounted Price</label>
+              <div className="inp" style={{color:"var(--gold2)",fontWeight:800,fontSize:18,letterSpacing:".3px"}}>{ndp?`$${fp(ndp)}`:"-"}</div>
+            </div>
+          </div>}
+        </div>
+        {full&&<>
+          {/* Visibility */}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 16px",background:"var(--g1)",border:"1px solid var(--edge)",borderRadius:"var(--r2)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:600,fontSize:14}}>
+              {f.vis?<Ic n="eye" s={15} c="var(--gold2)"/>:<Ic n="eyeOff" s={15} c="var(--text3)"/>}
+              {t.vis}: <span style={{color:f.vis?"var(--gold2)":"var(--text3)"}}>{f.vis?t.visY:t.visN}</span>
+            </div>
+            <label className="tog"><input type="checkbox" checked={f.vis} onChange={e=>set("vis",e.target.checked)}/><span className="tog-s"/></label>
+          </div>
+          {/* Images */}
+          <div className="field">
+            <label>{t.imgs}</label>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {f.imgs.map((img,i)=>(
+                <div key={i} style={{position:"relative"}}>
+                  <img src={img} alt="" style={{width:80,height:80,objectFit:"cover",borderRadius:"var(--r2)",border:"1px solid var(--edge2)"}}/>
+                  <button onClick={()=>set("imgs",f.imgs.filter((_,j)=>j!==i))} style={{position:"absolute",top:-7,right:-7,background:"var(--rose)",border:"none",borderRadius:"50%",width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff",boxShadow:"0 2px 8px rgba(0,0,0,.4)"}}>
+                    <Ic n="x" s={11}/>
+                  </button>
+                </div>
+              ))}
+              <label style={{width:80,height:80,border:"2px dashed var(--edge2)",borderRadius:"var(--r2)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"var(--text3)",fontSize:11,gap:5,transition:"all .22s",background:"var(--g1)"}}
+                onMouseOver={e=>{e.currentTarget.style.borderColor="var(--gold)";e.currentTarget.style.color="var(--gold2)"}}
+                onMouseOut={e=>{e.currentTarget.style.borderColor="var(--edge2)";e.currentTarget.style.color="var(--text3)"}}>
+                {uploading?<span className="spin" style={{width:22,height:22}}/>:<><Ic n="plus" s={22}/>{t.upImg}</>}
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={upImg} disabled={uploading}/>
+              </label>
+            </div>
+          </div>
+        </>}
+        <div className="end mt4" style={{paddingTop:8,borderTop:"1px solid var(--edge)"}}>
+          <button className="btn btn-ghost" onClick={onClose}>{t.cancel}</button>
+          <button className="btn btn-gold" onClick={save} disabled={saving}>
+            {saving?<span className="spin" style={{width:16,height:16}}/>:<><Ic n="check" s={15} c="#1a1200"/>{t.save}</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>;
+};
+
+/* ── STOCK PAGE ────────────────────────────── */
+const StockPg=()=>{
+  const{prods,t,lang}=useApp();
+  const isR=TX[lang].dir==="rtl";
+  const ins=prods.filter(p=>p.status==="in_stock").length;
+  const low=prods.filter(p=>p.status==="low_stock").length;
+  const out=prods.filter(p=>p.status==="out_of_stock").length;
+  return<ALayout active="stock">
+    <div className="page-title"><Ic n="bar" s={24} c="var(--gold2)"/>{t.stPg}</div>
+    <div className="stat-grid">
+      {[{l:"Total",n:prods.length,c:"var(--gold2)"},{l:t.ins,n:ins,c:"#4ade80"},{l:t.low,n:low,c:"#fbbf24"},{l:t.oos,n:out,c:"#fb7185"}].map((s,i)=>(
+        <div key={i} className="stat-card" style={{"--sc":s.c}}>
+          <div className="stat-n">{s.n}</div><div className="stat-l">{s.l}</div>
+        </div>
+      ))}
+    </div>
+    <div className="table-wrap">
+      <table className={`tbl ${isR?"tbl-rtl":""}`}>
+        <thead><tr><th>Product</th><th>Code</th><th>Category</th><th>Status</th><th style={{textAlign:"center"}}>Qty</th></tr></thead>
+        <tbody>
+          {prods.map(p=><tr key={p.id}>
+            <td><div style={{display:"flex",alignItems:"center",gap:12}}>
+              {p.imgs?.[0]&&<img src={p.imgs[0]} alt="" className="ithumb"/>}
+              <div style={{fontWeight:500}}>{p.name}</div>
+            </div></td>
+            <td><code style={{color:"var(--text2)",fontSize:12,background:"var(--g1)",padding:"3px 8px",borderRadius:4,border:"1px solid var(--edge)"}}>{p.code}</code></td>
+            <td><span className="tag t-gold">{p.cat}</span></td>
+            <td><STag status={p.status}/></td>
+            <td style={{textAlign:"center",fontWeight:700,color:p.stock<5?"var(--rose)":p.stock<20?"var(--amber)":"var(--text)"}}>{p.stock}</td>
+          </tr>)}
+        </tbody>
+      </table>
+    </div>
+  </ALayout>;
+};
+
+/* ── PRODUCTS ADMIN ────────────────────────── */
+const ProdsPg=()=>{
+  const{prods,cats,t,user,lang}=useApp();
+  const[editing,setEditing]=useState(null);
+  const[open,setOpen]=useState(false);
+  const isR=TX[lang].dir==="rtl";
+  return<ALayout active="products-admin">
+    <div className="page-title"><Ic n="pkg" s={24} c="var(--gold2)"/>{t.prPg}</div>
+    <div className="table-wrap">
+      <table className={`tbl ${isR?"tbl-rtl":""}`}>
+        <thead><tr><th>Product</th><th>Price</th><th>Discount</th><th>Status</th><th>Vis.</th><th>Action</th></tr></thead>
+        <tbody>
+          {prods.map(p=>{
+            const dp=p.da?disc(p.price,p.dp):null;
+            return<tr key={p.id}>
+              <td><div style={{display:"flex",alignItems:"center",gap:12}}>
+                {p.imgs?.[0]&&<img src={p.imgs[0]} alt="" className="ithumb"/>}
+                <div><div style={{fontWeight:600}}>{p.name}</div><div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{p.code}</div></div>
+              </div></td>
+              <td>
+                {dp?<><span style={{color:"var(--gold2)",fontWeight:700,fontSize:15}}>${fp(dp)}</span>
+                  {" "}<span style={{fontSize:12,color:"var(--text3)",textDecoration:"line-through"}}>${fp(p.price)}</span></>
+                :<span style={{fontWeight:600}}>${fp(p.price)}</span>}
+              </td>
+              <td>{p.da?<span className="tag t-red">{p.dp}%</span>:<span style={{color:"var(--text3)"}}>—</span>}</td>
+              <td><STag status={p.status}/></td>
+              <td>{p.vis?<Ic n="eye" s={16} c="#4ade80"/>:<Ic n="eyeOff" s={16} c="var(--text3)"/>}</td>
+              <td><button className="btn btn-ghost btn-xs" onClick={()=>{setEditing(p);setOpen(true)}}><Ic n="edit" s={13}/> Edit</button></td>
+            </tr>;
+          })}
+        </tbody>
+      </table>
+    </div>
+    {open&&<EditModal pr={editing} cats={cats} onClose={()=>setOpen(false)} role={user?.role}/>}
+  </ALayout>;
+};
+
+/* ── ADD/DELETE ────────────────────────────── */
+const AddPg=()=>{
+  const{prods,cats,t,user}=useApp();
+  const[addO,setAddO]=useState(false);
+  const[delC,setDelC]=useState(null);
+  if(!["owner","developer"].includes(user?.role))return<ALayout active="add-product"><div style={{color:"var(--rose)",fontSize:18,fontFamily:"var(--fd)"}}>{t.accDen}</div></ALayout>;
+  return<ALayout active="add-product">
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24,flexWrap:"wrap",gap:12}}>
+      <div className="page-title" style={{marginBottom:0}}><Ic n="plus" s={24} c="var(--gold2)"/>{t.addPg}</div>
+      <button className="btn btn-gold" onClick={()=>setAddO(true)}><Ic n="plus" s={15} c="#1a1200"/>{t.addN}</button>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",gap:8}}>
+      {prods.map(p=>(
+        <div key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",borderRadius:"var(--r2)",background:"linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))",border:"1px solid var(--edge2)",gap:12}}>
+          <div style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
+            {p.imgs?.[0]&&<img src={p.imgs[0]} alt="" className="ithumb"/>}
+            <div style={{minWidth:0}}>
+              <div style={{fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</div>
+              <div style={{fontSize:12,color:"var(--text3)",marginTop:2}}>{p.code} · {p.cat}</div>
+            </div>
+          </div>
+          <button className="btn btn-danger btn-sm" onClick={()=>setDelC(p.id)} style={{flexShrink:0}}><Ic n="trash" s={13} c="var(--rose)"/>{t.del}</button>
+        </div>
+      ))}
+    </div>
+    {addO&&<EditModal pr={null} cats={cats} onClose={()=>setAddO(false)} role={user?.role}/>}
+    {delC&&<div className="modal-bg">
+      <div className="modal" style={{maxWidth:400,animation:"scaleUp .22s cubic-bezier(.2,.8,.3,1)"}}>
+        <div className="modal-title"><Ic n="trash" s={20} c="var(--rose)"/>Confirm Delete</div>
+        <div className="modal-gold-bar" style={{background:"linear-gradient(to right,var(--rose),transparent)"}}/>
+        <p style={{color:"var(--text2)",marginBottom:24,lineHeight:1.75}}>{t.confDel}</p>
+        <div className="end">
+          <button className="btn btn-ghost" onClick={()=>setDelC(null)}>{t.cancel}</button>
+          <button className="btn btn-danger" onClick={async()=>{await db.delProduct(delC);setDelC(null)}}><Ic n="trash" s={13} c="var(--rose)"/>{t.del}</button>
+        </div>
+      </div>
+    </div>}
+  </ALayout>;
+};
+
+/* ── CATEGORIES ────────────────────────────── */
+const CatPg=()=>{
+  const{cats,t,user}=useApp();
+  const[nc,setNc]=useState("");
+  const[sav,setSav]=useState(false);
+  if(!["owner","developer"].includes(user?.role))return<ALayout active="categories"><div style={{color:"var(--rose)",fontSize:18,fontFamily:"var(--fd)"}}>{t.accDen}</div></ALayout>;
+  const add=async()=>{if(!nc.trim())return;setSav(true);await db.addCat(nc.trim());setNc("");setSav(false)};
+  return<ALayout active="categories">
+    <div className="page-title"><Ic n="tag" s={24} c="var(--gold2)"/>{t.catPg}</div>
+    <div style={{maxWidth:500}}>
+      <div style={{display:"flex",gap:10,marginBottom:20}}>
+        <input className="inp" placeholder={t.catN} value={nc} onChange={e=>setNc(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} style={{flex:1}}/>
+        <button className="btn btn-gold" onClick={add} disabled={sav||!nc.trim()}><Ic n="plus" s={15} c="#1a1200"/>{t.addCat}</button>
+      </div>
+      {cats.length===0?<div className="no-items" style={{minHeight:120}}><Ic n="tag" s={36} c="var(--text3)"/><p>{t.nocat}</p></div>:(
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {cats.map(c=>(
+            <div key={c} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 16px",borderRadius:"var(--r2)",background:"linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))",border:"1px solid var(--edge2)"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}><Ic n="tag" s={15} c="var(--gold2)"/><span style={{fontWeight:500}}>{c}</span></div>
+              <button className="btn btn-danger btn-sm" onClick={()=>db.delCat(c)}><Ic n="trash" s={13} c="var(--rose)"/></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </ALayout>;
+};
+
+/* ── SETTINGS ──────────────────────────────── */
+const SettingsPg=()=>{
+  const{st:settings,t,user}=useApp();
+  const[f,setF]=useState({...settings});
+  const[sav,setSav]=useState(false);
+  const[saved,setSaved]=useState(false);
+  const set=(k,v)=>setF(x=>({...x,[k]:v}));
+  useEffect(()=>setF({...settings}),[settings]);
+  if(!["owner","developer"].includes(user?.role))return<ALayout active="store-settings"><div style={{color:"var(--rose)",fontSize:18,fontFamily:"var(--fd)"}}>{t.accDen}</div></ALayout>;
+  const save=async()=>{setSav(true);await db.updSettings(f);setSav(false);setSaved(true);setTimeout(()=>setSaved(false),2500)};
+  const SC=({title,icon,children})=>(
+    <div className="section-card">
+      <div className="section-card-title"><Ic n={icon} s={15} c="var(--gold2)"/>{title}</div>
+      {children}
+    </div>
+  );
+  return<ALayout active="store-settings">
+    <div className="page-title"><Ic n="cog" s={24} c="var(--gold2)"/>{t.stgPg}</div>
+    <div style={{maxWidth:640}}>
+      <SC title="Store Identity" icon="store">
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div className="field"><label>Store Name</label><input className="inp" value={f.sn||""} onChange={e=>set("sn",e.target.value)}/></div>
+          <div className="field"><label>{t.banTxt}</label><input className="inp" value={f.tag||""} onChange={e=>set("tag",e.target.value)}/></div>
+          <div className="field"><label>{t.logoURL}</label><input className="inp" placeholder="https://…" value={f.logo||""} onChange={e=>set("logo",e.target.value)}/></div>
+          <div className="field"><label>{t.banURL}</label><input className="inp" placeholder="https://…" value={f.banner||""} onChange={e=>set("banner",e.target.value)}/></div>
+        </div>
+      </SC>
+      <SC title="WhatsApp Settings" icon="wa">
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div className="field"><label>{t.waNum} (no +)</label><input className="inp" placeholder="1234567890" value={f.wa||""} onChange={e=>set("wa",e.target.value)}/></div>
+          <div className="field">
+            <label>{t.waTpl}</label>
+            <textarea className="ta" style={{fontFamily:"monospace",fontSize:13,minHeight:110}} value={f.tpl||""} onChange={e=>set("tpl",e.target.value)}/>
+            <div style={{fontSize:12,color:"var(--text3)",marginTop:4}}>Variables: {"{name}"} {"{code}"} {"{price}"}</div>
+          </div>
+        </div>
+      </SC>
+      <button className="btn btn-gold" onClick={save} disabled={sav} style={{padding:"14px 32px",fontSize:15}}>
+        {sav?<span className="spin" style={{width:18,height:18}}/>:saved?<><Ic n="check" s={16} c="#1a1200"/>Saved!</>:<><Ic n="check" s={16} c="#1a1200"/>{t.saveSt}</>}
+      </button>
+    </div>
+  </ALayout>;
+};
+
+/* ── APP ROOT ──────────────────────────────── */
+function App(){
+  const[lang,setLangR]=useState(()=>localStorage.getItem("luxe_lang")||"en");
+  const[page,setPage]=useState("store");
+  const[user,setUser]=useState(()=>db.getUser());
+  const[prods,setProds]=useState([]);
+  const[cats,setCats]=useState([]);
+  const[st,setSt]=useState(DEF_ST);
+  const t=TX[lang];
+  const setLang=useCallback(l=>{setLangR(l);localStorage.setItem("luxe_lang",l)},[]);
+  useEffect(()=>{
+    const u1=db.onProducts(setProds);
+    const u2=db.onCats(setCats);
+    const u3=db.onSettings(setSt);
+    return()=>{u1();u2();u3()};
+  },[]);
+  useEffect(()=>{document.documentElement.dir=t.dir;document.documentElement.lang=lang;},[lang,t.dir]);
+  const ctx={lang,setLang,t,page,setPage,user,setUser,prods,cats,st};
+  const pages={
+    store:<StorePage/>,login:<LoginPage/>,stock:<StockPg/>,
+    "products-admin":<ProdsPg/>,"add-product":<AddPg/>,
+    categories:<CatPg/>,"store-settings":<SettingsPg/>,
+  };
+  return<Ctx.Provider value={ctx}>{pages[page]||<StorePage/>}</Ctx.Provider>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
